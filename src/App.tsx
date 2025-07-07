@@ -1,27 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-export const App: React.FC = () => {
-  const [pressedKey, setPressedKey] = useState<string | null>(null);
+type State = {
+  pressedKey: string | null;
+};
 
-  useEffect(() => {
-    const handleKey = (event: KeyboardEvent) => {
-      setPressedKey(event.key);
-    };
+export class App extends React.Component<State> {
+  state: State = {
+    pressedKey: null,
+  };
 
-    document.addEventListener('keyup', handleKey);
+  handleKey = (event: KeyboardEvent) => {
+    this.setState({ pressedKey: event.key });
+  };
 
-    return () => {
-      document.removeEventListener('keyup', handleKey);
-    };
-  }, []);
+  componentDidMount(): void {
+    document.addEventListener('keyup', this.handleKey);
+  }
 
-  return (
-    <div className="App">
-      <p className="App__message">
-        {pressedKey
-          ? `The last pressed key is [${pressedKey}]`
-          : `Nothing was pressed yet`}
-      </p>
-    </div>
-  );
+  componentWillUnmount(): void {
+    document.removeEventListener('keyup', this.handleKey);
+  }
+
+  render(): React.ReactNode {
+    const { pressedKey } = this.state;
+
+    return (
+      <div className="App">
+        <p className="App__message">
+          {pressedKey
+            ? `The last pressed key is [${pressedKey}]`
+            : `Nothing was pressed yet`}
+        </p>
+      </div>
+    );
+  }
 };
